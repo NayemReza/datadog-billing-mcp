@@ -1,0 +1,20 @@
+[project]
+name = "datadog-billing-mcp"
+version = "0.1.0"
+description = "Datadog Billing & Usage MCP Server - Cost analysis and usage metrics via Model Context Protocol"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "datadog-api-client>=2.39.0",
+    "mcp>=1.9.4",
+]
+
+[project.scripts]
+datadog-billing-mcp = "datadog_billing.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["datadog_billing"]
