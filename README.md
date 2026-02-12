@@ -43,23 +43,37 @@ uv sync
 
 ### Claude Code
 
-Add to your Claude Code MCP settings (`~/.claude/settings.json`):
+Add the MCP server using the CLI:
+
+```bash
+claude mcp add --scope local --transport stdio datadog-billing \
+  -- uv --directory /path/to/datadog-billing-mcp run datadog-billing-mcp
+```
+
+Then set the environment variables in `~/.claude.json` under your project's `mcpServers` entry:
 
 ```json
 {
-  "mcpServers": {
-    "datadog-billing": {
-      "command": "uv",
-      "args": ["--directory", "/path/to/datadog-billing-mcp", "run", "datadog-billing-mcp"],
-      "env": {
-        "DD_API_KEY": "your-api-key",
-        "DD_APP_KEY": "your-app-key",
-        "DD_SITE": "datadoghq.eu"
+  "projects": {
+    "/path/to/your-project": {
+      "mcpServers": {
+        "datadog-billing": {
+          "type": "stdio",
+          "command": "uv",
+          "args": ["--directory", "/path/to/datadog-billing-mcp", "run", "datadog-billing-mcp"],
+          "env": {
+            "DD_API_KEY": "your-api-key",
+            "DD_APP_KEY": "your-app-key",
+            "DD_SITE": "datadoghq.eu"
+          }
+        }
       }
     }
   }
 }
 ```
+
+> **Note:** Do not add MCP servers to `.claude/settings.local.json` — they are silently ignored there. Use `~/.claude.json` for local/personal servers, or `.mcp.json` for team-shared servers (but avoid committing API keys).
 
 ### Environment Variables
 
