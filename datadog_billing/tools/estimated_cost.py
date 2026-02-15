@@ -1,5 +1,6 @@
 """Get estimated cost for current billing period."""
 
+from datetime import datetime
 from datadog_api_client.v2.api.usage_metering_api import UsageMeteringApi
 from ..utils.client import get_api_client
 
@@ -20,7 +21,12 @@ def get_estimated_cost(view: str = "sub-org", start_month: str | None = None) ->
 
         kwargs = {"view": view}
         if start_month:
-            kwargs["start_month"] = start_month
+            for fmt in ("%Y-%m", "%Y-%m-%d"):
+                try:
+                    kwargs["start_month"] = datetime.strptime(start_month, fmt)
+                    break
+                except ValueError:
+                    continue
 
         response = api.get_estimated_cost_by_org(**kwargs)
 

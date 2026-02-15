@@ -1,7 +1,18 @@
 """Get historical cost data."""
 
+from datetime import datetime
 from datadog_api_client.v2.api.usage_metering_api import UsageMeteringApi
 from ..utils.client import get_api_client
+
+
+def _parse_month(month_str: str) -> datetime:
+    """Parse YYYY-MM or YYYY-MM-DD string to datetime."""
+    for fmt in ("%Y-%m", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(month_str, fmt)
+        except ValueError:
+            continue
+    raise ValueError(f"Cannot parse '{month_str}' as date. Use YYYY-MM format.")
 
 
 def get_historical_cost(start_month: str, end_month: str | None = None, view: str = "sub-org") -> dict:
@@ -20,11 +31,11 @@ def get_historical_cost(start_month: str, end_month: str | None = None, view: st
         api = UsageMeteringApi(api_client)
 
         kwargs = {
-            "start_month": start_month,
+            "start_month": _parse_month(start_month),
             "view": view,
         }
         if end_month:
-            kwargs["end_month"] = end_month
+            kwargs["end_month"] = _parse_month(end_month)
 
         response = api.get_historical_cost_by_org(**kwargs)
 
